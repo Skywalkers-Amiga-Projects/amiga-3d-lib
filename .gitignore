@@ -1,3 +1,10 @@
+# Emacs backup files
+*~
+
+# Build directory and files
+build/
+build/*
+
 # Prerequisites
 *.d
 
