@@ -31,6 +31,10 @@ typedef double                   FLOAT64;
 //typedef          long           DWORD;
 //typedef unsigned long          UDWORD;
 
+/* Macros */
+#define MIN(x,y)            (((x)<(y))?(x):(y))
+#define MAX(x,y)            (((x)<(y))?(x):(y))
+
 #endif
 /*_____________________________________________________________________________
  | License:                                                                    |

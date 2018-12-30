@@ -20,7 +20,7 @@ UINT32 setup_chiparea(void){
 }
 
 UINT32 setup_fastarea(void){
-    fast_area = AllocMem(FASTMEM_SIZE, MEMF_FAST|MEMF_CLEAR);
+    fast_area = AllocMem(FASTMEM_SIZE, /*MEMF_ANY*/MEMF_PUBLIC|MEMF_CLEAR);
     return (UINT32)fast_area;
 }
 

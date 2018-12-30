@@ -1,5 +1,5 @@
 /* ____________________________________________________________________________
-  | File: copman.c - part of Amiga 3D Demo.                                    |
+  | File: copper.c - part of Amiga 3D Demo.                                    |
   | Author: skywalker aka J.Karlsson <j.karlsson@retrocoder.se>                |
   | Copyright: (C) 2018 skywalker. All rights reserved.                        |
   |____________________________________________________________________________|
@@ -7,13 +7,14 @@
 
 #include <exec/types.h>
 #include <exec/libraries.h>
+#include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
 #include <hardware/custom.h>
 #include <proto/exec.h>
 
 #include "mem_areas.h"
 #include "dmaman.h"
-#include "copman.h"
+#include "copper.h"
 
 extern struct Custom custom;
 extern chipmem_content *chip_area;

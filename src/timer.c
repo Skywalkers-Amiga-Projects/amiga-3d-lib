@@ -1,28 +1,51 @@
 /* ____________________________________________________________________________
-  | File: timer.c - part of Amiga 3D Demo.                                      |
+  | File: timer.c - part of Amiga 3D Demo.                                     |
   | Author: skywalker aka J.Karlsson <j.karlsson@retrocoder.se>                |
   | Copyright: (C) 2018 skywalker. All rights reserved.                        |
   |____________________________________________________________________________|
 */
 
 #include <hardware/custom.h>
+#include <hardware/cia.h>
+#include <hardware/intbits.h>
+#include <hardware/dmabits.h>
 #include "base_types.h"
 #include "timer.h"
 
 extern struct Custom custom;
 
+void busy_wait_mouse_click(void){
+#pragma dontwarn 81 // VBCC warning 81: only 0 should be cast to pointer
+    struct CIA *ciaa = (struct CIA*)0xBFE001;
+#pragma popwarn
+
+    // Wait for left mouse button click
+    while(ciaa->ciapra&CIAF_GAMEPORT0);
+}
+
 INT16 busy_wait_frames(UINT16 t){
     UINT16 frame = 0;
     while(frame < t){
-        if(custom.vhposr > (0xF7<<8)){
+        if(custom.vhposr > (0xFE<<8)){
             custom.color[0] =  0x0F0;
             while(custom.vhposr&0xFF00);
+            while(custom.vhposr <= (0x08<<8));
             custom.color[0] =  0x000;
             frame++;
         }
     }
     return 0;
 }
+
+void busy_wait_screen(void){
+    while(custom.vhposr <= (0xFF<<8));
+    while(custom.vhposr <= (0x08<<8));
+}
+
+void busy_wait_blitter(void){
+    while(custom.dmaconr&DMAF_BLTDONE);
+}
+
 
 /*___________________________________________________________________________
  | License:                                                                  |

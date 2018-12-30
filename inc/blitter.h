@@ -1,15 +1,20 @@
 /* ____________________________________________________________________________
-  | File: copman.h - part of Amiga 3D Demo.                                    |
+  | File: blitter.c - part of Amiga 3D Demo.                                   |
   | Author: skywalker aka J.Karlsson <j.karlsson@retrocoder.se>                |
   | Copyright: (C) 2018 skywalker. All rights reserved.                        |
   |____________________________________________________________________________|
 */
-#ifndef COPMAN_H
-#define COPMAN_H
+#ifndef BLIITER_H
+#define BLIITER_H
+#include <exec/types.h>
 
-int store_copper(void);
-int restore_copper(void);
-int init_copper_list(void);
+#define BLT_CLEAR (0x0000)
+
+void blt_clear(void);
+void blt_fill(UWORD);
+
+void blt_line(int x1, int y1, int x2, int y2);
+void blt_line2(int x1, int y1, int x2, int y2);
 
 #endif
 /*_____________________________________________________________________________

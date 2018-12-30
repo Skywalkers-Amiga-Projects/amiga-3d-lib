@@ -44,6 +44,8 @@ NOWARN+=-dontwarn=163
 #TODO: Clean up
 # warning 113: only 0 should be assigned to pointer
 #TODO: Move HW pointers to assembler.
+# warning 306: padding bytes behind member <xyz>
+NOWARN+=-dontwarn=306
 # warning 307: member <xyz> does not have natural alignment
 NOWARN+=-dontwarn=307
 # warning 168: no declaration of global variable <start> before definition
@@ -56,7 +58,7 @@ NOWARN+=-dontwarn=166
 NOWARN+=-dontwarn=65
 
 # Flags
-CPPFLAGS=-I$(INC)
+CPPFLAGS=-I$(INC) -DNO_PRAGMAS
 CFLAGS=$(NOWARN)
 ASFLAGS=
 LDFLAGS=-lamiga
@@ -76,7 +78,7 @@ install: $(PROG)
 	$(COPY) $(BIN)$(PROG) $(INSTDIR)
 
 clean:
-	$(RM) $(BIN) $(OBJ) *~ $(SRC)*~ $(INC)*~
+	$(RM) $(BLD) *~ $(SRC)*~ $(INC)*~
 
 $(PROG): $(BIN)$(PROG)
 

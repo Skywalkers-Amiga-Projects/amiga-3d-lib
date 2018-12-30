@@ -9,7 +9,11 @@
 
 #include "base_types.h"
 
-INT16 busy_wait_frames(UINT16 t);
+void busy_wait_mouse_click(void);
+INT16 busy_wait_frames(UINT16);
+void busy_wait_screen(void);
+
+void busy_wait_blitter(void);
 
 #endif
 /*___________________________________________________________________________

@@ -10,13 +10,15 @@
 #include "3d_graphics.h"
 #include "mem_areas.h"
 #include "dmaman.h"
-#include "copman.h"
+#include "copper.h"
+#include "blitter.h"
 
 extern struct Custom custom;
 extern chipmem_content *chip_area;
 
 void setup_graphics(void){
-  setup_bitplanes();
+    setup_blitter();
+    setup_bitplanes();
 }
 
 void setup_bitplanes(void){
@@ -32,10 +34,8 @@ void setup_bitplanes(void){
     custom.ddfstrt = 0x38;
     custom.ddfstop = 0xD0;
 
-    // Fill screen with pattern
-    for(int i = 0; i < BITPLANE_SZ(SCREEN_WIDTH,SCREEN_HEIGHT); i++){
-	chip_area->bit_plane0[i] =  0xA5;
-    }
+    // Clear screen
+    blt_clear();
 
     // Set even and odd bitplane modulo
     custom.bpl1mod = 0x0;
@@ -50,6 +50,15 @@ void setup_bitplanes(void){
 
     // Enable copper and screen DMA
     enable_dma(DF_COPPER|DF_RASTER);
+}
+
+void setup_blitter(void){
+    // Enable blitter DMA
+    enable_dma(DF_BLITTER);
+}
+
+void drawline(int x1, int y1, int x2, int y2){
+    blt_line(x1,y1,x2,y2);
 }
 
 /*___________________________________________________________________________

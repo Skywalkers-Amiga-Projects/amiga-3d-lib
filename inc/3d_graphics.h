@@ -10,7 +10,9 @@
 void setup_graphics(void);
 
 void setup_bitplanes(void);
+void setup_blitter(void);
 
+void drawline(int x1, int y1, int x2, int y2);
 
 #endif
 /*___________________________________________________________________________
