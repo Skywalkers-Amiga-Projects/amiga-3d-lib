@@ -5,60 +5,64 @@
   |____________________________________________________________________________|
 */
 
+#include "3d_graphics.h"
+
 #include <hardware/custom.h>
 
-#include "3d_graphics.h"
-#include "mem_areas.h"
-#include "dmaman.h"
-#include "copper.h"
 #include "blitter.h"
+#include "copper.h"
+#include "dmaman.h"
+#include "mem_areas.h"
 
-extern struct Custom custom;
+extern struct Custom    custom;
 extern chipmem_content *chip_area;
 
-void setup_graphics(void){
-    setup_blitter();
-    setup_bitplanes();
+void setup_graphics(void) {
+  setup_blitter();
+  setup_bitplanes();
 }
 
-void setup_bitplanes(void){
-    // Init screen display
+void setup_bitplanes(void) {
+  // Init screen display
 
-    // Set screen size - row and column are 9 bit values counting low-res (320*256) pixels.
-    // Display size = 0x108 - 0x40 = 0xC8 = 200 rows, 0x1C1 - 0x81 = 0x140 = 320 columns
-    custom.diwstrt = 0x4081; // Display window start at row 0x40 and column 0x81.
-    custom.diwstop = 0x08C1; // Display window ends at row 0x108 and column 0x1C1.
+  // Set screen size - row and column are 9 bit values counting low-res
+  // (320*256) pixels. Display size = 0x108 - 0x40 = 0xC8  = 200 rows,
+  //                                  0x1C1 - 0x81 = 0x140 = 320 columns
+  // Display window start at row 0x40 and column 0x81.
+  custom.diwstrt = 0x4081;
+  // Display window ends at row 0x108 and column 0x1C1.
+  custom.diwstop = 0x08C1;
 
-    // Set DMA display timing
-    // What does it mean?? 0x81 / 2 - 8 = 0x38
-    custom.ddfstrt = 0x38;
-    custom.ddfstop = 0xD0;
+  // Set DMA display timing
+  // What does it mean?? 0x81 / 2 - 8 = 0x38
+  custom.ddfstrt = 0x38;
+  custom.ddfstop = 0xD0;
 
-    // Clear screen
-    blt_clear();
+  // Clear screen
+  blt_clear();
 
-    // Set even and odd bitplane modulo
-    custom.bpl1mod = 0x0;
-    custom.bpl2mod = 0x0;
+  // Set even and odd bitplane modulo
+  custom.bpl1mod = 0x0;
+  custom.bpl2mod = 0x0;
 
-    // Set new copper list
-    init_copper_list();
+  // Set new copper list
+  init_copper_list();
 
-    // Set bitplane addresses
-    chip_area->copperlist[1] = HIGH_ADDRESS(chip_area->bit_plane0);
-    chip_area->copperlist[3] = LOW_ADDRESS(chip_area->bit_plane0);
+  // Set bitplane addresses
+  chip_area->copperlist[1] = HIGH_ADDRESS(chip_area->bit_plane0);
+  chip_area->copperlist[3] = LOW_ADDRESS(chip_area->bit_plane0);
 
-    // Enable copper and screen DMA
-    enable_dma(DF_COPPER|DF_RASTER);
+  // Enable copper and screen DMA
+  enable_dma(DF_COPPER | DF_RASTER);
 }
 
-void setup_blitter(void){
-    // Enable blitter DMA
-    enable_dma(DF_BLITTER);
+void setup_blitter(void) {
+  // Enable blitter DMA
+  enable_dma(DF_BLITTER);
 }
 
-void drawline(int x1, int y1, int x2, int y2){
-    blt_line(x1,y1,x2,y2);
+void drawline(int x1, int y1, int x2, int y2) {
+  blt_line(x1, y1, x2, y2);
 }
 
 /*___________________________________________________________________________

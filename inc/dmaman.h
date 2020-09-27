@@ -8,19 +8,20 @@
 #define DMAMAN_H
 
 #include <hardware/dmabits.h>
+
 #include "base_types.h"
 
 typedef enum {
-    DF_AUDIO0  = DMAF_AUD0,
-    DF_AUDIO1  = DMAF_AUD1,
-    DF_AUDIO2  = DMAF_AUD2,
-    DF_AUDIO3  = DMAF_AUD3,
-    DF_AUDIO   = DMAF_AUDIO,
-    DF_DISK    = DMAF_DISK,
-    DF_SPRITE  = DMAF_SPRITE,
-    DF_BLITTER = DMAF_BLITTER,
-    DF_COPPER  = DMAF_COPPER,
-    DF_RASTER  = DMAF_RASTER
+  DF_AUDIO0  = DMAF_AUD0,
+  DF_AUDIO1  = DMAF_AUD1,
+  DF_AUDIO2  = DMAF_AUD2,
+  DF_AUDIO3  = DMAF_AUD3,
+  DF_AUDIO   = DMAF_AUDIO,
+  DF_DISK    = DMAF_DISK,
+  DF_SPRITE  = DMAF_SPRITE,
+  DF_BLITTER = DMAF_BLITTER,
+  DF_COPPER  = DMAF_COPPER,
+  DF_RASTER  = DMAF_RASTER
 } DMAFLAGS;
 
 int store_dma(void);

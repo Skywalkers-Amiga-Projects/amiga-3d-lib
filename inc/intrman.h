@@ -1,5 +1,5 @@
 /* ____________________________________________________________________________
-  | File: intrman.c - part of Amiga 3D Demo.                                    |
+  | File: intrman.c - part of Amiga 3D Demo.                                   |
   | Author: skywalker aka J.Karlsson <j.karlsson@retrocoder.se>                |
   | Copyright: (C) 2018 skywalker. All rights reserved.                        |
   |____________________________________________________________________________|

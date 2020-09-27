@@ -5,32 +5,33 @@
   |____________________________________________________________________________|
 */
 
+#include "mem_areas.h"
+
 #include <exec/memory.h>
 #include <proto/exec.h>
 
 #include "base_types.h"
-#include "mem_areas.h"
 
 chipmem_content *chip_area;
 fastmem_content *fast_area;
 
-UINT32 setup_chiparea(void){
-    chip_area = AllocMem(CHIPMEM_SIZE, MEMF_CHIP|MEMF_CLEAR);
-    return (UINT32)chip_area;
+UINT32 setup_chiparea(void) {
+  chip_area = AllocMem(CHIPMEM_SIZE, MEMF_CHIP | MEMF_CLEAR);
+  return (UINT32)chip_area;
 }
 
-UINT32 setup_fastarea(void){
-    fast_area = AllocMem(FASTMEM_SIZE, /*MEMF_ANY*/MEMF_PUBLIC|MEMF_CLEAR);
-    return (UINT32)fast_area;
+UINT32 setup_fastarea(void) {
+  fast_area = AllocMem(FASTMEM_SIZE, /*MEMF_ANY*/ MEMF_PUBLIC | MEMF_CLEAR);
+  return (UINT32)fast_area;
 }
 
-void free_memareas(){
-    if(chip_area != NULL){
-        FreeMem(chip_area, CHIPMEM_SIZE);
-    }
-    if(fast_area != NULL){
-        FreeMem(fast_area, FASTMEM_SIZE);
-    }
+void free_memareas() {
+  if (chip_area != NULL) {
+    FreeMem(chip_area, CHIPMEM_SIZE);
+  }
+  if (fast_area != NULL) {
+    FreeMem(fast_area, FASTMEM_SIZE);
+  }
 }
 
 /*_____________________________________________________________________________

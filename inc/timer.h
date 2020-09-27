@@ -1,5 +1,5 @@
 /* ____________________________________________________________________________
-  | File: timer.h - part of Amiga 3D Demo.                                      |
+  | File: timer.h - part of Amiga 3D Demo.                                     |
   | Author: skywalker aka J.Karlsson <j.karlsson@retrocoder.se>                |
   | Copyright: (C) 2018 skywalker. All rights reserved.                        |
   |____________________________________________________________________________|
@@ -9,9 +9,9 @@
 
 #include "base_types.h"
 
-void busy_wait_mouse_click(void);
+void  busy_wait_mouse_click(void);
 INT16 busy_wait_frames(UINT16);
-void busy_wait_screen(void);
+void  busy_wait_screen(void);
 
 void busy_wait_blitter(void);
 

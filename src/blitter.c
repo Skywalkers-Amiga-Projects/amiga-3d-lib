@@ -5,167 +5,171 @@
   |____________________________________________________________________________|
 */
 
-#include <stdlib.h>
-
-#include <hardware/custom.h>
-#include <hardware/blit.h>
-
-#include "mem_areas.h"
-#include "base_types.h"
-#include "timer.h"
 #include "blitter.h"
 
-extern struct Custom custom;
-extern chipmem_content *chip_area;
+#include <hardware/blit.h>
+#include <hardware/custom.h>
+#include <stdlib.h>
 
-void blt_clear(void){
-    blt_fill(BLT_CLEAR);
+#include "base_types.h"
+#include "mem_areas.h"
+#include "timer.h"
+
+extern struct Custom    custom;
+extern chipmem_content* chip_area;
+
+void blt_clear(void) {
+  blt_fill(BLT_CLEAR);
 }
 
-void blt_fill(UWORD pattern){
-    busy_wait_blitter();
+void blt_fill(UWORD pattern) {
+  busy_wait_blitter();
 
-    custom.bltcon0 = 0x0102; // Use C as fill source (Logic Function 2: !A!BC)
-    custom.bltcon1 = 0x0000;
+  custom.bltcon0 = 0x0102;  // Use C as fill source (Logic Function 2: !A!BC)
+  custom.bltcon1 = 0x0000;
 
-    custom.bltafwm = 0x0000;
-    custom.bltalwm = 0x0000;
+  custom.bltafwm = 0x0000;
+  custom.bltalwm = 0x0000;
 
-    custom.bltapt = NULL;
-    custom.bltbpt = NULL;
-    custom.bltcpt = NULL;
-#pragma dontwarn 167 // VBCC warning 167: pointer cast may cause alignment problems
-    custom.bltdpt = (APTR)chip_area->bit_plane0;
-#pragma popwarn
+  custom.bltapt = NULL;
+  custom.bltbpt = NULL;
+  custom.bltcpt = NULL;
+  // VBCC warning 167: pointer cast may cause alignment problems
+  #pragma dontwarn 167
+  custom.bltdpt = (APTR)chip_area->bit_plane0;
+  #pragma popwarn
 
-    custom.bltamod = 0x0000;
-    custom.bltbmod = 0x0000;
-    custom.bltcmod = 0x0000;
-    custom.bltdmod = 0x0000;
+  custom.bltamod = 0x0000;
+  custom.bltbmod = 0x0000;
+  custom.bltcmod = 0x0000;
+  custom.bltdmod = 0x0000;
 
-    custom.bltadat = 0x0000;
-    custom.bltbdat = 0x0000;
-    custom.bltcdat = pattern; // Set fill pattern
-//    custom.bltddat = 0x0000;
+  custom.bltadat = 0x0000;
+  custom.bltbdat = 0x0000;
+  custom.bltcdat = pattern;  // Set fill pattern
+  // custom.bltddat = 0x0000;
 
-    // Start blit operation
-    custom.bltsize = 0x3214;
+  // Start blit operation
+  custom.bltsize = 0x3214;
 }
 
 void simpleline(__reg("d0") UBYTE* bplpt);
-void line(__reg("d0") UINT32 x1, __reg("d1") UINT32 y1, __reg("d2") UINT32 x2, __reg("d3") UINT32 y2, __reg("a0") UBYTE* color);
+void line(__reg("d0") UINT32 x1, __reg("d1") UINT32 y1,
+          __reg("d2") UINT32 x2, __reg("d3") UINT32 y2,
+          __reg("a0") UBYTE* color);
 
-void blt_line(int x1, int y1, int x2, int y2){
-    busy_wait_blitter();
+void blt_line(int x1, int y1, int x2, int y2) {
+  busy_wait_blitter();
 
-//    blt_line2(x1, y1, x2, y2);
+  // blt_line2(x1, y1, x2, y2);
 
-    UINT start_index = x1/8 + (y1*(320/8));
-//    simpleline(chip_area->bit_plane0/* + start_index*/);
-    line(x1, y1, x2, y2, chip_area->bit_plane0 + start_index);
+  UINT start_index = x1 / 8 + (y1 * (320 / 8));
+  // simpleline(chip_area->bit_plane0/* + start_index*/);
+  line(x1, y1, x2, y2, chip_area->bit_plane0 + start_index);
 }
 
+void blt_line2(int x1, int y1, int x2, int y2) {
+  x1 = 100;
+  y1 = 100;
+  x2 = 150;
+  y2 = 150;
+  busy_wait_blitter();
 
-void blt_line2(int x1, int y1, int x2, int y2){
-    x1 = 100; y1 = 100;
-    x2 = 150; y2 = 150;
-    busy_wait_blitter();
+  /* The SRCA, SRCC, and DEST bits of BLTCON0  should be set to one, and the
+     SRCB flag should be set to zero. */
+  /* The A  shift  value should be set to the x
+     coordinate of the first point (x1) modulo 15. */
+  UINT16 ashift = x1 % 15;
+  custom.bltcon0 = (ashift << 12) | 0x0BCA;  // USEA | USEC | USED = 0xB;
+  /* The logic function remains.  The C  DMA channel  represents the original
+     source, the A channel the bit to set in the line, and the B channel the
+     pattern to draw.  Thus, to draw a line, the function AB | !A is the most
+     common.
+     To draw the line using exclusive-or mode, so it can be easily erased by
+     drawing it again, the function AB!C | !AC can be used.
 
-    /* The SRCA, SRCC, and DEST bits of BLTCON0  should be set to one, and the
-       SRCB flag should be set to zero. */
-    /* The A  shift  value should be set to the x
-       coordinate of the first point (x1) modulo 15. */
-    UINT16 ashift = x1%15;
-    custom.bltcon0 = (ashift << 12) | 0x0BCA; // USEA | USEC | USED = 0xB;
-    /* The logic function remains.  The C  DMA channel  represents the original
-       source, the A channel the bit to set in the line, and the B channel the
-       pattern to draw.  Thus, to draw a line, the function AB | !A is the most
-       common.
-       To draw the line using exclusive-or mode, so it can be easily erased by
-       drawing it again, the function AB!C | !AC can be used.
+    BIT   A  B  C  -> D
+     0    0  0  0     0
+     1    0  0  1     1
+     2    0  1  0     0
+     3    0  1  1     1 = !AC (Pixel already set, src = C)
+     4    1  0  0     0
+     5    1  0  1     0
+     6    1  1  0     1
+     7    1  1  1     1 = AB (Set line pixel, line = A, texture pattern = B)
+    --------------------
+     !AC | AB = CA
+  */
 
-      BIT   A  B  C  -> D
-       0    0  0  0     0
-       1    0  0  1     1
-       2    0  1  0     0
-       3    0  1  1     1 = !AC (Pixel already set, src = C)
-       4    1  0  0     0
-       5    1  0  1     0
-       6    1  1  0     1
-       7    1  1  1     1 = AB (Set line pixel, line = A, texture pattern = B)
-      --------------------
-       !AC | AB = CA
-    */
+  /* The OVFLAG should be cleared. */
+  /* If only a single bit per horizontal row is desired, the ONEDOT bit of
+     BLTCON1 should be set; otherwise it should be cleared.*/
+  INT16  dx = x2 - x1;
+  INT16  dy = y2 - y1;
+  UINT16 adx = abs(dx);
+  UINT16 ady = abs(dy);
 
-    /* The OVFLAG should be cleared. */
-    /* If only a single bit per horizontal row is desired, the ONEDOT bit of  BLTCON1
-       should be set; otherwise it should be cleared.*/
-    INT16 dx = x2 - x1;
-    INT16 dy = y2 - y1;
-    UINT16 adx = abs(dx);
-    UINT16 ady = abs(dy);
+  int octant = 0;
+  if (dx >= 0 && dy < 0) { /* Quadrant 0, i.e. octant 0 or 1 */
+    octant = (adx >= ady) ? OCTANT0 : OCTANT1;
+  } else if (dx < 0 && dy < 0) { /* Quadrant 1, i.e. octant 2 or 3 */
+    octant = (adx < ady) ? OCTANT2 : OCTANT3;
+  } else if (dx < 0 && dy >= 0) { /* Quandrant 2, i.e. octant 4 or 5 */
+    octant = (adx >= ady) ? OCTANT4 : OCTANT5;
+  } else if (dx >= 0 && dy >= 0) { /* Quadrant 3, i.e. octant 6 or 7 */
+    octant = (adx < ady) ? OCTANT6 : OCTANT7;
+  }
 
-    int octant = 0;
-    if(dx >= 0 && dy < 0){ /* Quadrant 0, i.e. octant 0 or 1 */
-        octant = (adx >= ady)?OCTANT0:OCTANT1;
-    } else if(dx < 0 && dy < 0){ /* Quadrant 1, i.e. octant 2 or 3 */ 
-        octant = (adx < ady)?OCTANT2:OCTANT3;
-    } else if(dx < 0 && dy >= 0){ /* Quandrant 2, i.e. octant 4 or 5 */
-        octant = (adx >= ady)?OCTANT4:OCTANT5;
-    } else if (dx >= 0 && dy >= 0){ /* Quadrant 3, i.e. octant 6 or 7 */
-        octant = (adx < ady)?OCTANT6:OCTANT7;
-    }
+  dx = MAX(adx, ady);
+  dy = MIN(adx, ady);
+  /* Set the A  pointer register to 4 * dy - 2 * dx. If this value
+     is negative, we set the sign bit (SIGNFLAG in  BLTCON1 ), otherwise we
+     clear it. */
+  /* The B shift value should be set to the bit number at which to start
+     the line texture (zero means the last significant bit.)*/
+  INT32  apt = (4 * dy) - (2 * dx);
+  UINT16 sign = (apt < 0) ? SIGNFLAG : 0;
+  custom.bltcon1 = sign | octant | LINEMODE;
+  custom.bltapt = (APTR)(UINT32)apt;
 
-    dx = MAX(adx, ady);
-    dy = MIN(adx, ady);
-    /* Set the A  pointer register to 4 * dy - 2 * dx. If this value
-       is negative, we set the sign bit (SIGNFLAG in  BLTCON1 ), otherwise we
-       clear it. */
-    /* The B shift value should be set to the bit number at which to start
-       the line texture (zero means the last significant bit.)*/
-    INT32 apt = (4*dy) - (2*dx);
-    UINT16 sign = (apt < 0)?SIGNFLAG:0;
-    custom.bltcon1 = sign | octant | LINEMODE;
-    custom.bltapt = (APTR)(UINT32)apt;
+  /* Set the A modulo register  to 4 * (dy - dx) and the B
+     modulo register  to 4 * dy. */
+  custom.bltamod = 4 * (dy - dx);
+  custom.bltbmod = 4 * dy;
 
-    /* Set the A modulo register  to 4 * (dy - dx) and the B
-       modulo register  to 4 * dy. */
-    custom.bltamod = 4*(dy-dx);
-    custom.bltbmod = 4*dy;
+  /* The A  data register  should be preloaded with $8000. */
+  custom.bltadat = 0x8000;
+  custom.bltbpt = NULL; /* Unused */
 
-    /* The A  data register  should be preloaded with $8000. */
-    custom.bltadat = 0x8000;
-    custom.bltbpt = NULL; /* Unused */
+  /* Both word  masks should be set to $FFFF. */
+  custom.bltafwm = 0xFFFF;
+  custom.bltalwm = 0xFFFF;
 
-    /* Both word  masks should be set to $FFFF. */
-    custom.bltafwm = 0xFFFF;
-    custom.bltalwm = 0xFFFF;
+  /* The B  data register  should be initialized with the line texture pattern,
+     if any, or $FFFF for a solid line. The B shift value should be set to
+     the bit number at which to start the line texture (zero means the last
+     significant bit.)*/
+  custom.bltbdat = 0xFFFF;
 
-    /* The B  data register  should be initialized with the line texture pattern,
-       if any, or $FFFF for a solid line. The B shift value should be set to
-       the bit number at which to start the line texture (zero means the last
-       significant bit.)*/
-    custom.bltbdat = 0xFFFF;
+  /* The C and D pointer registers should be initialized to the word
+     containing the first pixel of the line; the C and D modulo registers
+     should be set to the width of the bitplane in bytes. */
+  UINT start_index = x1 / 8 + (y1 * (320 / 8));
+  // VBCC warning 167: pointer cast may cause alignment problems
+  #pragma dontwarn 167
+  custom.bltcpt = (APTR)(chip_area->bit_plane0 + start_index);
+  custom.bltdpt = (APTR)(chip_area->bit_plane0 + start_index);
+  #pragma popwarn
+  custom.bltcmod = 0x0028;
+  custom.bltdmod = 0x0028;
 
-    /* The C and D pointer registers should be initialized to the word
-       containing the first pixel of the line; the C and D modulo registers
-       should be set to the width of the bitplane in bytes. */
-    UINT start_index = x1/8 + (y1*(320/8));
-#pragma dontwarn 167 // VBCC warning 167: pointer cast may cause alignment problems
-    custom.bltcpt = (APTR)(chip_area->bit_plane0 + start_index);
-    custom.bltdpt = (APTR)(chip_area->bit_plane0 + start_index);
-#pragma popwarn
-    custom.bltcmod = 0x0028;
-    custom.bltdmod = 0x0028;
+  // custom.bltcdat = 0x0000;
 
-//    custom.bltcdat = 0x0000;
-
-    // Start blit operation
-    /* Set the blit height to the length of the line, which is dx + 1. The
-       width must be set to two for all line drawing. */
-    custom.bltsize = ((dx+1) << 6) | 0x02;
+  // Start blit operation
+  /* Set the blit height to the length of the line, which is dx + 1. The
+     width must be set to two for all line drawing. */
+  custom.bltsize = ((dx + 1) << 6) | 0x02;
 }
-
 
 /*_____________________________________________________________________________
  | License:                                                                    |
@@ -359,7 +363,7 @@ Register setup:
 simpleline:
         lea     _custom,a1      ; snarf up the custom address register
 
-        dx = 
+        dx =
         sub.w   d0,d2           ; calculate dx
         bmi     xneg            ; if negative, octant is one of [3,4,5,6]
         sub.w   d1,d3           ; calculate dy   ''   is one of [1,2,7,8]

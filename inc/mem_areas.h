@@ -10,32 +10,34 @@
  * extern chipmem_content *chip_area;
  * extern fastmem_content *fast_area;
  */
-//#define _HAVE_BYTE_TYPE_
+#include "exec/types.h"
+
+// #define _HAVE_BYTE_TYPE_
 #include "base_types.h"
 
-#define HIGH_ADDRESS(addr) ((USHORT)0xFFFF&(((ULONG)(addr))>>0x10))
-#define LOW_ADDRESS(addr)  ((USHORT)0xFFFF&(ULONG)(addr))
+#define HIGH_ADDRESS(addr) ((USHORT)0xFFFF & (((ULONG)(addr)) >> 0x10))
+#define LOW_ADDRESS(addr)  ((USHORT)0xFFFF & (ULONG)(addr))
 
 #define SCREEN_WIDTH  (320)
 #define SCREEN_HEIGHT (200)
-#define BITPLANE_SZ(w,h) ((w)*(h)/8)
+#define BITPLANE_SZ(w, h) ((w) * (h) / 8)
 #define MAX_COPPER_LIST_LEN (1024)
 
-#define CHIPMEM_SIZE (100*1024)
-#define FASTMEM_SIZE (100*1024)
+#define CHIPMEM_SIZE (100 * 1024)
+#define FASTMEM_SIZE (100 * 1024)
 
 #define ERR_NO_CHIPMEM (0)
 #define ERR_NO_FASTMEM (0)
 
 /* Contents of chip memory area */
 typedef struct {
-    UBYTE bit_plane0[BITPLANE_SZ(SCREEN_WIDTH,SCREEN_HEIGHT)];
-    USHORT copperlist[MAX_COPPER_LIST_LEN];
+  UBYTE  bit_plane0[BITPLANE_SZ(SCREEN_WIDTH, SCREEN_HEIGHT)];
+  USHORT copperlist[MAX_COPPER_LIST_LEN];
 } chipmem_content;
 
 /* Contents of fast memory area */
 typedef struct {
-    unsigned char data[1024];
+  unsigned char data[1024];
 } fastmem_content;
 
 UINT32 setup_chiparea(void);

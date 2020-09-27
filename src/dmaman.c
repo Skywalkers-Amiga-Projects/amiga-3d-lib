@@ -5,38 +5,38 @@
   |____________________________________________________________________________|
 */
 
+#include "dmaman.h"
+
 #include <exec/types.h>
 #include <hardware/custom.h>
 #include <hardware/dmabits.h>
-
-#include "dmaman.h"
 
 extern struct Custom custom;
 
 static UWORD saved_dma;
 
-int store_dma(void){
-    // Save active DMA
-    UWORD saved_dma = custom.dmaconr;
-    return 0;
+int store_dma(void) {
+  // Save active DMA
+  UWORD saved_dma = custom.dmaconr;
+  return 0;
 }
 
-int restore_dma(void){
-    // Restore DMA settings
-    custom.dmacon =  DMAF_SETCLR|DMAF_MASTER|DMAF_ALL | saved_dma;
-    return 0;
+int restore_dma(void) {
+  // Restore DMA settings
+  custom.dmacon = DMAF_SETCLR | DMAF_MASTER | DMAF_ALL | saved_dma;
+  return 0;
 }
 
-int disable_dma(void){
-    // disable DMA
-    custom.dmacon =  DMAF_ALL;
+int disable_dma(void) {
+  // disable DMA
+  custom.dmacon = DMAF_ALL;
 
-    return 0;
+  return 0;
 }
 
-int enable_dma(DMAFLAGS dma_flags){
-    custom.dmacon =  DMAF_SETCLR|DMAF_MASTER | dma_flags;
-    return 0;
+int enable_dma(DMAFLAGS dma_flags) {
+  custom.dmacon = DMAF_SETCLR | DMAF_MASTER | dma_flags;
+  return 0;
 }
 
 /*_____________________________________________________________________________
