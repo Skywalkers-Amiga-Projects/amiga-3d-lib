@@ -30,10 +30,13 @@
 #define ERR_NO_FASTMEM (0)
 
 /* Contents of chip memory area */
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 typedef struct {
   UBYTE  bit_plane0[BITPLANE_SZ(SCREEN_WIDTH, SCREEN_HEIGHT)];
   USHORT copperlist[MAX_COPPER_LIST_LEN];
 } chipmem_content;
+#pragma popwarn
 
 /* Contents of fast memory area */
 typedef struct {

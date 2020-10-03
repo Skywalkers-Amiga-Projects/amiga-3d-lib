@@ -8,7 +8,10 @@
 #include "dmaman.h"
 
 #include <exec/types.h>
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/custom.h>
+#pragma popwarn
 #include <hardware/dmabits.h>
 
 extern struct Custom custom;
@@ -17,7 +20,7 @@ static UWORD saved_dma;
 
 int store_dma(void) {
   // Save active DMA
-  UWORD saved_dma = custom.dmaconr;
+  saved_dma = custom.dmaconr;
   return 0;
 }
 

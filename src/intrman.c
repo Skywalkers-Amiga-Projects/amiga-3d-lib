@@ -8,7 +8,10 @@
 #include "intrman.h"
 
 #include <exec/types.h>
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/custom.h>
+#pragma popwarn
 #include <hardware/intbits.h>
 
 extern struct Custom custom;
@@ -17,7 +20,7 @@ static UWORD saved_interrupts = 0;
 
 int store_interrupts(void) {
   // Save active interrupts
-  UWORD saved_interrupts = custom.intenar;
+  saved_interrupts = custom.intenar;
 
   return 0;
 }

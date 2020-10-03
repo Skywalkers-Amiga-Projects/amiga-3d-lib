@@ -24,29 +24,9 @@ BLD=build/
 OBJ=$(BLD)obj/
 BIN=$(BLD)bin/
 
-# Disble warnings
-# warning 163: #pragma used
-NOWARN+=-dontwarn=163
-# warning 314: trailing garbage in preprocessing directive
-#TODO: Clean up
-# warning 113: only 0 should be assigned to pointer
-#TODO: Move HW pointers to assembler.
-# warning 306: padding bytes behind member <xyz>
-NOWARN+=-dontwarn=306
-# warning 307: member <xyz> does not have natural alignment
-NOWARN+=-dontwarn=307
-# warning 168: no declaration of global variable <start> before definition
-#NOWARN+=-dontwarn=168
-# warning 166: cast to narrow type may cause loss of precision
-NOWARN+=-dontwarn=166
-# warning 214: suspicious format string
-#NOWARN+=-dontwarn=214
-# warning 65: in function "<func>": var <var> was never used
-NOWARN+=-dontwarn=65
-
 # Flags
 CPPFLAGS=-I$(INC) -DNO_PRAGMAS
-CFLAGS=$(NOWARN)
+CFLAGS=
 ASFLAGS=
 
 # Source files (anything in the src directory)

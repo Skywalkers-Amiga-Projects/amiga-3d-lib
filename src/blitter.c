@@ -7,8 +7,17 @@
 
 #include "blitter.h"
 
+// VBCC warning 306: padding bytes behind member <M>
+#pragma dontwarn 306
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/blit.h>
+#pragma popwarn
+#pragma popwarn
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/custom.h>
+#pragma popwarn
 #include <stdlib.h>
 
 #include "base_types.h"
@@ -79,8 +88,11 @@ void blt_line2(int x1, int y1, int x2, int y2) {
      SRCB flag should be set to zero. */
   /* The A  shift  value should be set to the x
      coordinate of the first point (x1) modulo 15. */
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
   UINT16 ashift = x1 % 15;
   custom.bltcon0 = (ashift << 12) | 0x0BCA;  // USEA | USEC | USED = 0xB;
+  #pragma popwarn
   /* The logic function remains.  The C  DMA channel  represents the original
      source, the A channel the bit to set in the line, and the B channel the
      pattern to draw.  Thus, to draw a line, the function AB | !A is the most
@@ -104,10 +116,13 @@ void blt_line2(int x1, int y1, int x2, int y2) {
   /* The OVFLAG should be cleared. */
   /* If only a single bit per horizontal row is desired, the ONEDOT bit of
      BLTCON1 should be set; otherwise it should be cleared.*/
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
   INT16  dx = x2 - x1;
   INT16  dy = y2 - y1;
   UINT16 adx = abs(dx);
   UINT16 ady = abs(dy);
+  #pragma popwarn
 
   int octant = 0;
   if (dx >= 0 && dy < 0) { /* Quadrant 0, i.e. octant 0 or 1 */
@@ -120,15 +135,21 @@ void blt_line2(int x1, int y1, int x2, int y2) {
     octant = (adx < ady) ? OCTANT6 : OCTANT7;
   }
 
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
   dx = MAX(adx, ady);
   dy = MIN(adx, ady);
+  #pragma popwarn
   /* Set the A  pointer register to 4 * dy - 2 * dx. If this value
      is negative, we set the sign bit (SIGNFLAG in  BLTCON1 ), otherwise we
      clear it. */
   /* The B shift value should be set to the bit number at which to start
      the line texture (zero means the last significant bit.)*/
   INT32  apt = (4 * dy) - (2 * dx);
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
   UINT16 sign = (apt < 0) ? SIGNFLAG : 0;
+  #pragma popwarn
   custom.bltcon1 = sign | octant | LINEMODE;
   custom.bltapt = (APTR)(UINT32)apt;
 
@@ -168,7 +189,10 @@ void blt_line2(int x1, int y1, int x2, int y2) {
   // Start blit operation
   /* Set the blit height to the length of the line, which is dx + 1. The
      width must be set to two for all line drawing. */
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
   custom.bltsize = ((dx + 1) << 6) | 0x02;
+  #pragma popwarn
 }
 
 /*_____________________________________________________________________________

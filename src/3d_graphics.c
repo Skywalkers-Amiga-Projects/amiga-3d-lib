@@ -7,7 +7,10 @@
 
 #include "3d_graphics.h"
 
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/custom.h>
+#pragma popwarn
 
 #include "blitter.h"
 #include "copper.h"

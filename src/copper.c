@@ -7,12 +7,21 @@
 
 #include "copper.h"
 
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <exec/libraries.h>
+#pragma popwarn
 #include <exec/types.h>
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
 #include <hardware/custom.h>
+// VBCC warning 314: trailing garbage in preprocessing directive
+#pragma dontwarn 314
 #include <proto/exec.h>
+#pragma popwarn
+#pragma popwarn
 
 #include "dmaman.h"
 #include "mem_areas.h"

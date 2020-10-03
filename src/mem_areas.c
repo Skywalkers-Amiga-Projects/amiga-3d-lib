@@ -7,8 +7,14 @@
 
 #include "mem_areas.h"
 
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <exec/memory.h>
+// VBCC warning 314: trailing garbage in preprocessing directive
+#pragma dontwarn 314
 #include <proto/exec.h>
+#pragma popwarn
+#pragma popwarn
 
 #include "base_types.h"
 

@@ -8,8 +8,11 @@
 #include "timer.h"
 
 #include <exec/types.h>
+// VBCC warning 307: member <M> does not have natural alignment
+#pragma dontwarn 307
 #include <hardware/cia.h>
 #include <hardware/custom.h>
+#pragma popwarn
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
