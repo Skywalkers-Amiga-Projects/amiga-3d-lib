@@ -44,7 +44,7 @@ int main(void) {
 
   // Test horizontal line left to right
   int x1 = 100, y1 = 100;
-  int x2 = 150, y2 = 150;
+  // int x2 = 150, y2 = 150;
   // drawline(x1,y1 , x2,y2);
 
   // Test 1st quadrant
