@@ -50,6 +50,7 @@ install: $(PROG)
 
 clean:
 	$(RM) $(BLD) *~ $(SRC)*~
+	$(MAKE) clean -C../
 
 $(PROG): $(BIN)$(PROG)
 
