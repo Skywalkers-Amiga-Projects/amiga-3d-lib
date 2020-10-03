@@ -9,30 +9,17 @@
 # VBCC compiler config file (default vc.cfg)
 #VCCONF=+vc.cfg
 
-# Detect OS
-OS := $(shell uname -s)
-
-# Installation directory
-INSTDIR=$(HOME)/Documents/retro/Amiga/drives/wb1_3/user/bin
-
 # Tools
 CC=vc $(VCCONF)
 AS=vc $(VCCONF)
 LD=vc $(VCCONF)
+JOIN=cat
 RM=rm -rf
 MKDIR=mkdir -p
-COPY=cp
-ADF=xdftool
-ifeq ($(OS), Linux)
-     UAE=fs-uae
-else
-     UAE=winuae
-endif
 
 # Directory structure
 SRC=src/
 INC=inc/
-LIB=lib/
 BLD=build/
 OBJ=$(BLD)obj/
 BIN=$(BLD)bin/
@@ -61,29 +48,24 @@ NOWARN+=-dontwarn=65
 CPPFLAGS=-I$(INC) -DNO_PRAGMAS
 CFLAGS=$(NOWARN)
 ASFLAGS=
-LDFLAGS=-lamiga
 
 # Source files (anything in the src directory)
 SOURCES=$(wildcard $(SRC)*)
 
-# Binary files (exe/objs/libs)
-PROG=3d_demo
+# Binary files (lib/objs)
+LIB=3d_graphics.lib
 OBJS=$(subst $(SRC),$(OBJ),$(addsuffix .o,$(basename $(SOURCES))))
-LIBS=
 
-.phony: all install clean $(PROG)
-all: $(PROG) install
-
-install: $(PROG)
-	$(COPY) $(BIN)$(PROG) $(INSTDIR)
+.phony: all clean $(LIB)
+all: $(LIB)
 
 clean:
 	$(RM) $(BLD) *~ $(SRC)*~ $(INC)*~
 
-$(PROG): $(BIN)$(PROG)
+$(LIB): $(BIN)$(LIB)
 
-$(BIN)$(PROG): $(OBJS) | $(BIN)
-	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+$(BIN)$(LIB): $(OBJS) | $(BIN)
+	$(JOIN) $^ > $@
 
 $(OBJ)%.o: $(SRC)%.c | $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
