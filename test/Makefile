@@ -25,22 +25,24 @@ SRC=src/
 BLD=build/
 OBJ=$(BLD)obj/
 BIN=$(BLD)bin/
+LIBPATH=../build/bin/
 
 # Flags
 CPPFLAGS=-I$(INC) -I../inc -DNO_PRAGMAS
-CFLAGS=$(NOWARN)
+CFLAGS=
 ASFLAGS=
-LDFLAGS=-L../build/bin
+LDFLAGS=-L$(LIBPATH)
 
 # Source files (anything in the src directory)
 SOURCES=$(wildcard $(SRC)*)
 
 # Binary files (exe/objs/libs)
 PROG=3d_demo
+LIB=3d_graphics.lib
 OBJS=$(subst $(SRC),$(OBJ),$(addsuffix .o,$(basename $(SOURCES))))
-LIBS=-lamiga -l3d_graphics
+LIBS=-lamiga -l$(basename $(LIB))
 
-.phony: all install clean $(PROG)
+.phony: all install clean $(PROG) $(LIB)
 all: $(PROG) install
 
 install: $(PROG)
@@ -51,8 +53,13 @@ clean:
 
 $(PROG): $(BIN)$(PROG)
 
-$(BIN)$(PROG): $(OBJS) | $(BIN)
+$(BIN)$(PROG): $(OBJS) | $(LIB) $(BIN)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(LIB): $(LIBPATH)$(LIB)
+
+$(LIBPATH)$(LIB):
+	$(MAKE) -C../
 
 $(OBJ)%.o: $(SRC)%.c | $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
