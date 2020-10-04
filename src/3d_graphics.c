@@ -15,17 +15,24 @@
 #include "blitter.h"
 #include "copper.h"
 #include "dmaman.h"
-#include "mem_areas.h"
+
+#define HIGH_ADDRESS(addr) ((USHORT)0xFFFF & (((ULONG)(addr)) >> 0x10))
+#define LOW_ADDRESS(addr)  ((USHORT)0xFFFF & (ULONG)(addr))
 
 extern struct Custom    custom;
-extern chipmem_content *chip_area;
 
-void setup_graphics(void) {
+void setup_graphics(UBYTE  *bitplanes[],
+                    UINT8   bpl_count,
+                    USHORT *copper_list,
+                    UINT16 copls_maxlen) {
   setup_blitter();
-  setup_bitplanes();
+  setup_bitplanes(bitplanes, bpl_count, copper_list, copls_maxlen);
 }
 
-void setup_bitplanes(void) {
+void setup_bitplanes(UBYTE  *bitplanes[],
+                     UINT8  bpl_count,
+                     USHORT *copper_list,
+                     UINT16 copls_maxlen) {
   // Init screen display
 
   // Set screen size - row and column are 9 bit values counting low-res
@@ -42,18 +49,18 @@ void setup_bitplanes(void) {
   custom.ddfstop = 0xD0;
 
   // Clear screen
-  blt_clear();
+  blt_clear(bitplanes[0]);
 
   // Set even and odd bitplane modulo
   custom.bpl1mod = 0x0;
   custom.bpl2mod = 0x0;
 
   // Set new copper list
-  init_copper_list();
+  init_copper_list(copper_list, copls_maxlen);
 
   // Set bitplane addresses
-  chip_area->copperlist[1] = HIGH_ADDRESS(chip_area->bit_plane0);
-  chip_area->copperlist[3] = LOW_ADDRESS(chip_area->bit_plane0);
+  copper_list[1] = HIGH_ADDRESS(bitplanes[0]);
+  copper_list[3] = LOW_ADDRESS(bitplanes[0]);
 
   // Enable copper and screen DMA
   enable_dma(DF_COPPER | DF_RASTER);
@@ -64,8 +71,8 @@ void setup_blitter(void) {
   enable_dma(DF_BLITTER);
 }
 
-void drawline(int x1, int y1, int x2, int y2) {
-  blt_line(x1, y1, x2, y2);
+void drawline(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
+  blt_line(x1, y1, x2, y2, bitplane);
 }
 
 /*___________________________________________________________________________

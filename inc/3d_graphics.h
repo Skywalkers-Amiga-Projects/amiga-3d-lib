@@ -7,12 +7,22 @@
 #ifndef eD_GRAPHICS_H
 #define eD_GRAPHICS_H
 
-void setup_graphics(void);
+#include <exec/types.h>
 
-void setup_bitplanes(void);
+#include "base_types.h"
+
+void setup_graphics(UBYTE *bitplanes[],
+                    UINT8 bpl_count,
+                    USHORT *copper_list,
+                    UINT16 copls_maxlen);
+
+void setup_bitplanes(UBYTE *bitplanes[],
+                     UINT8 bpl_count,
+                     USHORT *copper_list,
+                     UINT16 copls_maxlen);
 void setup_blitter(void);
 
-void drawline(int x1, int y1, int x2, int y2);
+void drawline(int x1, int y1, int x2, int y2, UBYTE *bitplane);
 
 #endif
 /*___________________________________________________________________________

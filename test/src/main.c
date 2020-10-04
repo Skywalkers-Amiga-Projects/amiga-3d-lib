@@ -17,6 +17,9 @@
 #include "mem_areas.h"
 #include "timer.h"
 
+extern chipmem_content *chip_area;
+extern fastmem_content *fast_area;
+
 int main(void) {
   printf("A small 3D demo...\nLet's start!!\n");
 
@@ -40,7 +43,9 @@ int main(void) {
   disable_dma();
 
   /* Show graphics */
-  setup_graphics();
+  UBYTE *bitplanes[1];
+  bitplanes[0] = chip_area->bit_plane0;
+  setup_graphics(bitplanes, 1, chip_area->copperlist, MAX_COPPER_LIST_LEN);
 
   // Test horizontal line left to right
   int x1 = 100, y1 = 100;
@@ -51,44 +56,44 @@ int main(void) {
   x1 = 100, y1 = 100;
   for (int y2 = 100; y2 >= 50; y2 -= 10) {
     int x2 = 150;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
   for (int x2 = 100; x2 <= 150; x2 += 10) {
     int y2 = 50;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
 
   // Test 2nd quadrant
   x1 = 100, y1 = 100;
   for (int y2 = 100; y2 >= 50; y2 -= 10) {
     int x2 = 50;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
   for (int x2 = 100; x2 >= 50; x2 -= 10) {
     int y2 = 50;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
 
   // Test 3rd quadrant
   x1 = 100, y1 = 100;
   for (int y2 = 100; y2 <= 150; y2 += 10) {
     int x2 = 50;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
   for (int x2 = 100; x2 >= 50; x2 -= 10) {
     int y2 = 150;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
 
   // Test 4th quadrant
   x1 = 100, y1 = 100;
   for (int y2 = 100; y2 <= 150; y2 += 10) {
     int x2 = 150;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
   for (int x2 = 100; x2 <= 150; x2 += 10) {
     int y2 = 150;
-    drawline(x1, y1, x2, y2);
+    drawline(x1, y1, x2, y2, bitplanes[0]);
   }
 
   /* Wait for end */

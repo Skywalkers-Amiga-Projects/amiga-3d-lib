@@ -7,9 +7,12 @@
 #ifndef COPPER_H
 #define COPPER_H
 
+#include <exec/types.h>
+#include "base_types.h"
+
 int store_copper(void);
 int restore_copper(void);
-int init_copper_list(void);
+int init_copper_list(USHORT *copperlist, UINT16 copls_maxlen);
 
 #endif
 /*_____________________________________________________________________________

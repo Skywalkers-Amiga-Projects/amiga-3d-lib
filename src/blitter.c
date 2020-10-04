@@ -21,17 +21,15 @@
 #include <stdlib.h>
 
 #include "base_types.h"
-#include "mem_areas.h"
 #include "timer.h"
 
 extern struct Custom    custom;
-extern chipmem_content* chip_area;
 
-void blt_clear(void) {
-  blt_fill(BLT_CLEAR);
+void blt_clear(UBYTE *bitplane) {
+  blt_fill(BLT_CLEAR, bitplane);
 }
 
-void blt_fill(UWORD pattern) {
+void blt_fill(UWORD pattern, UBYTE *bitplane) {
   busy_wait_blitter();
 
   custom.bltcon0 = 0x0102;  // Use C as fill source (Logic Function 2: !A!BC)
@@ -45,7 +43,7 @@ void blt_fill(UWORD pattern) {
   custom.bltcpt = NULL;
   // VBCC warning 167: pointer cast may cause alignment problems
   #pragma dontwarn 167
-  custom.bltdpt = (APTR)chip_area->bit_plane0;
+  custom.bltdpt = (APTR)bitplane;
   #pragma popwarn
 
   custom.bltamod = 0x0000;
@@ -67,17 +65,17 @@ void line(__reg("d0") UINT32 x1, __reg("d1") UINT32 y1,
           __reg("d2") UINT32 x2, __reg("d3") UINT32 y2,
           __reg("a0") UBYTE* color);
 
-void blt_line(int x1, int y1, int x2, int y2) {
+void blt_line(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
   busy_wait_blitter();
 
   // blt_line2(x1, y1, x2, y2);
 
   UINT start_index = x1 / 8 + (y1 * (320 / 8));
   // simpleline(chip_area->bit_plane0/* + start_index*/);
-  line(x1, y1, x2, y2, chip_area->bit_plane0 + start_index);
+  line(x1, y1, x2, y2, bitplane + start_index);
 }
 
-void blt_line2(int x1, int y1, int x2, int y2) {
+void blt_line2(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
   x1 = 100;
   y1 = 100;
   x2 = 150;
@@ -178,8 +176,8 @@ void blt_line2(int x1, int y1, int x2, int y2) {
   UINT start_index = x1 / 8 + (y1 * (320 / 8));
   // VBCC warning 167: pointer cast may cause alignment problems
   #pragma dontwarn 167
-  custom.bltcpt = (APTR)(chip_area->bit_plane0 + start_index);
-  custom.bltdpt = (APTR)(chip_area->bit_plane0 + start_index);
+  custom.bltcpt = (APTR)(bitplane + start_index);
+  custom.bltdpt = (APTR)(bitplane + start_index);
   #pragma popwarn
   custom.bltcmod = 0x0028;
   custom.bltdmod = 0x0028;

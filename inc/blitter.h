@@ -10,11 +10,11 @@
 
 #define BLT_CLEAR (0x0000)
 
-void blt_clear(void);
-void blt_fill(UWORD);
+void blt_clear(UBYTE *bitplane);
+void blt_fill(UWORD pattern, UBYTE *bitplane);
 
-void blt_line(int x1, int y1, int x2, int y2);
-void blt_line2(int x1, int y1, int x2, int y2);
+void blt_line(int x1, int y1, int x2, int y2, UBYTE *bitplane);
+void blt_line2(int x1, int y1, int x2, int y2, UBYTE *bitplane);
 
 #endif
 /*_____________________________________________________________________________

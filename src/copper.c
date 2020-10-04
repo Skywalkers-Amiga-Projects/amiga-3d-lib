@@ -24,10 +24,8 @@
 #pragma popwarn
 
 #include "dmaman.h"
-#include "mem_areas.h"
 
 extern struct Custom    custom;
-extern chipmem_content *chip_area;
 
 static struct copinit *saved_copperlist;
 
@@ -67,21 +65,21 @@ typedef enum {
   CL_BPLCON2 = 0x104,  // Bitplane control register (video priority control)
 } COPPER_ADDRESS;
 
-int init_copper_list() {
+int init_copper_list(USHORT *copperlist, UINT16 copls_maxlen) {
   USHORT copper_list_data[] = {
     0x00E0,     0x0000,                      // Set bitplane addresses
     0x00E2,     0x0000, CL_BPLCON0, 0x1000,  // x bitplane(s) on
     CL_BPLCON1, 0x0000, CL_BPLCON2, 0x0000,
     CL_END,     0xFFFE  // Copper list end.
   };
-  for (int i = 0; i < MAX_COPPER_LIST_LEN; i += 2) {
+  for (int i = 0; i < copls_maxlen; i += 2) {
     USHORT cop_inst = copper_list_data[i];
     USHORT cop_data = copper_list_data[i + 1];
-    chip_area->copperlist[i] = cop_inst;
-    chip_area->copperlist[i + 1] = cop_data;
-    if (cop_inst == 0xFFFF) break;
+    copperlist[i] = cop_inst;
+    copperlist[i + 1] = cop_data;
+    if (cop_inst == CL_END) break;
   }
-  custom.cop1lc = (ULONG)chip_area->copperlist;
+  custom.cop1lc = (ULONG)copperlist;
 
   return 0;
 }
