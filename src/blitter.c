@@ -18,10 +18,11 @@
 #pragma dontwarn 307
 #include <hardware/custom.h>
 #pragma popwarn
+#include <hardware/dmabits.h>
+
 #include <stdlib.h>
 
 #include "base_types.h"
-#include "timer.h"
 
 extern struct Custom    custom;
 
@@ -30,7 +31,8 @@ void blt_clear(UBYTE *bitplane) {
 }
 
 void blt_fill(UWORD pattern, UBYTE *bitplane) {
-  busy_wait_blitter();
+  // busy_wait_blitter();
+  while (custom.dmaconr & DMAF_BLTDONE);
 
   custom.bltcon0 = 0x0102;  // Use C as fill source (Logic Function 2: !A!BC)
   custom.bltcon1 = 0x0000;
@@ -66,7 +68,8 @@ void line(__reg("d0") UINT32 x1, __reg("d1") UINT32 y1,
           __reg("a0") UBYTE* color);
 
 void blt_line(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
-  busy_wait_blitter();
+  // busy_wait_blitter();
+  while (custom.dmaconr & DMAF_BLTDONE);
 
   // blt_line2(x1, y1, x2, y2);
 
@@ -80,7 +83,8 @@ void blt_line2(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
   y1 = 100;
   x2 = 150;
   y2 = 150;
-  busy_wait_blitter();
+  // busy_wait_blitter();
+  while (custom.dmaconr & DMAF_BLTDONE);
 
   /* The SRCA, SRCC, and DEST bits of BLTCON0  should be set to one, and the
      SRCB flag should be set to zero. */
