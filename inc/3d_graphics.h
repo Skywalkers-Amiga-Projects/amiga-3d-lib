@@ -22,6 +22,8 @@ void setup_bitplanes(UBYTE *bitplanes[],
                      UINT16 copls_maxlen);
 void setup_blitter(void);
 
+void plot(UINT16 x, UINT16 y, UINT16 z, UBYTE *bitplane);
+
 void drawline(int x1, int y1, int x2, int y2, UBYTE *bitplane);
 
 #endif

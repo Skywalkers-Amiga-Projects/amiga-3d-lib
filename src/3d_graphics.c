@@ -71,6 +71,15 @@ void setup_blitter(void) {
   enable_dma(DF_BLITTER);
 }
 
+void plot(UINT16 x, UINT16 y, UINT16 z, UBYTE *bitplane) {
+  UINT32 index = y * (320 / 8) + (x / 8);
+  // VBCC warning 166: cast to narrow type may cause loss of precision
+  #pragma dontwarn 166
+  UINT8  bit = 1 << (x & 7);
+  #pragma popwarn
+  bitplane[index] |= bit;
+}
+
 void drawline(int x1, int y1, int x2, int y2, UBYTE *bitplane) {
   blt_line(x1, y1, x2, y2, bitplane);
 }
