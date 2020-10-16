@@ -20,6 +20,10 @@
 extern chipmem_content *chip_area;
 extern fastmem_content *fast_area;
 
+// Test functions
+void test_plot(void);
+
+
 int main(void) {
   printf("A small 3D demo...\nLet's start!!\n");
 
@@ -46,6 +50,9 @@ int main(void) {
   UBYTE *bitplanes[1];
   bitplanes[0] = chip_area->bit_plane0;
   setup_graphics(bitplanes, 1, chip_area->copperlist, MAX_COPPER_LIST_LEN);
+
+  // Test plot
+  test_plot();
 
   // Test horizontal line left to right
   int x1 = 100, y1 = 100;
@@ -109,6 +116,17 @@ int main(void) {
 
   free_memareas();
   return 0;
+}
+
+void test_plot(void) {
+  for (int y = 0; y < SCREEN_HEIGHT; y++) {
+    for (int x = 0; x < SCREEN_WIDTH; x+=2) {
+      // VBCC warning 166: cast to narrow type may cause loss of precision
+      #pragma dontwarn 166
+      plot(x, y, 0, chip_area->bit_plane0);
+      #pragma popwarn
+    }
+  }
 }
 
 /*_____________________________________________________________________________
