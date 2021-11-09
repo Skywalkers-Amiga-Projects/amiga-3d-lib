@@ -4,20 +4,19 @@
 # | Copyright: (C) 2020 skywalker. All rights reserved.                        |
 # |____________________________________________________________________________|
 
-# Target configuration (uncomment applicable config part).
+# Target configuration
 # Target system: Amiga 500 (AmigaOS 1.3 - version 34.5)
-# VBCC compiler config file (default vc.cfg)
-VCCONF=+vc.cfg
+# VBCC compiler config file
+VCCONF=+../config/kick13
 
 # Installation directory
-INSTDIR=/d/jorgen/Documents/retro/Amiga/drives/wb1_3/user/bin
+INSTDIR=/d/OneDrive/Documents/retro/Amiga/drives/wb1_3/user/bin
 
 # Tools
 CC=vc $(VCCONF)
-AS=vc $(VCCONF)
 LD=vc $(VCCONF)
+MAKE=make
 RM=rm -rf
-MKDIR=mkdir -p
 COPY=cp
 
 # Directory structure
@@ -30,7 +29,6 @@ LIBPATH=../build/bin/
 # Flags
 CPPFLAGS=-I$(INC) -I../inc -DNO_PRAGMAS
 CFLAGS=
-ASFLAGS=
 LDFLAGS=-L$(LIBPATH)
 
 # Source files (anything in the src directory)
@@ -49,28 +47,21 @@ install: $(PROG)
 	$(COPY) $(BIN)$(PROG) $(INSTDIR)
 
 clean:
-	$(RM) $(BLD) *~ $(SRC)*~
+	$(RM) $(OBJ)* $(BIN)*
 	$(MAKE) clean -C../
 
 $(PROG): $(BIN)$(PROG)
 
-$(BIN)$(PROG): $(OBJS) | $(LIB) $(BIN)
+$(BIN)$(PROG): $(OBJS) | $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 $(LIB): $(LIBPATH)$(LIB)
 
 $(LIBPATH)$(LIB):
-	$(MAKE) -C../
+	$(MAKE) -C ../
 
-$(OBJ)%.o: $(SRC)%.c | $(OBJ)
+$(OBJ)%.o: $(SRC)%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-# Create directory structure
-$(OBJ):
-	$(MKDIR) $(OBJ)
-
-$(BIN):
-	$(MKDIR) $(BIN)
 
 #  ____________________________________________________________________________
 # | License:                                                                   |

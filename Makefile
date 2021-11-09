@@ -4,18 +4,17 @@
 # | Copyright: (C) 2018 skywalker. All rights reserved.                        |
 # |____________________________________________________________________________|
 
-# Target configuration (uncomment applicable config part).
+# Target configuration
 # Target system: Amiga 500 (AmigaOS 1.3 - version 34.5)
-# VBCC compiler config file (default vc.cfg)
-#VCCONF=+vc.cfg
+# VBCC compiler config file
+VCCONF=+config/kick13
 
 # Tools
 CC=vc $(VCCONF)
-AS=vc $(VCCONF)
+AS=vasmm68k_mot
 LD=vc $(VCCONF)
 JOIN=cat
 RM=rm -rf
-MKDIR=mkdir -p
 
 # Directory structure
 SRC=src/
@@ -26,8 +25,9 @@ BIN=$(BLD)bin/
 
 # Flags
 CPPFLAGS=-I$(INC) -DNO_PRAGMAS
+
 CFLAGS=
-ASFLAGS=
+ASFLAGS=-quiet -m68000 -phxass -align -chklabels -wfail -x -Fhunk -kick1hunks
 
 # Source files (anything in the src directory)
 SOURCES=$(wildcard $(SRC)*)
@@ -40,34 +40,18 @@ OBJS=$(subst $(SRC),$(OBJ),$(addsuffix .o,$(basename $(SOURCES))))
 all: $(LIB)
 
 clean:
-	$(RM) $(BLD) *~ $(SRC)*~ $(INC)*~
+	$(RM) $(OBJ)* $(BIN)*
 
 $(LIB): $(BIN)$(LIB)
 
-$(BIN)$(LIB): $(OBJS) | $(BIN)
+$(BIN)$(LIB): $(OBJS)
 	$(JOIN) $^ > $@
 
-$(OBJ)%.o: $(SRC)%.c | $(OBJ)
+$(OBJ)%.o: $(SRC)%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-$(OBJ)%.o: $(SRC)%.s | $(OBJ)
-	$(AS) $(ASFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-$(OBJ)%.o: $(SRC)%.S | $(OBJ)
-	$(AS) $(ASFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-$(OBJ)%.o: $(SRC)%.asm | $(OBJ)
-	$(AS) $(ASFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-$(OBJ)%.o: $(SRC)%.a | $(OBJ)
-	$(AS) $(ASFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-# Create directory structure
-$(OBJ):
-	$(MKDIR) $(OBJ)
-
-$(BIN):
-	$(MKDIR) $(BIN)
+$(OBJ)%.o: $(SRC)%.s
+	$(AS) $(ASFLAGS) $(CPPFLAGS) -o $@ $<
 
 #  ____________________________________________________________________________
 # | License:                                                                   |
