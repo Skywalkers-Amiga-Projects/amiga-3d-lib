@@ -22,7 +22,10 @@ extern fastmem_content *fast_area;
 
 // Test functions
 void test_plot(void);
-
+void test_plot_horizontal_lines(void);
+void test_plot_vertical_lines(void);
+void test_plot_cross_pattern(void);
+void test_plot_diagonal_pattern(void);
 
 int main(void) {
   printf("A small 3D demo...\nLet's start!!\n");
@@ -119,13 +122,80 @@ int main(void) {
 }
 
 void test_plot(void) {
-  for (int y = 0; y < SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < SCREEN_WIDTH; x+=2) {
+  blt_clear(chip_area->bit_plane0);
+  test_plot_horizontal_lines();
+  busy_wait_mouse_click();
+
+  blt_clear(chip_area->bit_plane0);
+  test_plot_vertical_lines();
+  busy_wait_mouse_click();
+
+  blt_clear(chip_area->bit_plane0);
+  test_plot_cross_pattern();
+  busy_wait_mouse_click();
+
+  blt_clear(chip_area->bit_plane0);
+  test_plot_diagonal_pattern();
+  busy_wait_mouse_click();
+  blt_clear(chip_area->bit_plane0);
+}
+
+void test_plot_horizontal_lines(void) {
+  for (int y = 0; y < SCREEN_HEIGHT; y+=2) {
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
       // VBCC warning 166: cast to narrow type may cause loss of precision
       #pragma dontwarn 166
       plot(x, y, 0, chip_area->bit_plane0);
       #pragma popwarn
     }
+  }
+}
+
+void test_plot_vertical_lines(void) {
+  for (int x = 0; x < SCREEN_WIDTH; x+=2) {
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+      // VBCC warning 166: cast to narrow type may cause loss of precision
+      #pragma dontwarn 166
+      plot(x, y, 0, chip_area->bit_plane0);
+      #pragma popwarn
+    }
+  }
+}
+
+void test_plot_cross_pattern(void) {
+  // Vertical lines
+  for (int y = 0; y < SCREEN_HEIGHT; y+=3) {
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+      // VBCC warning 166: cast to narrow type may cause loss of precision
+      #pragma dontwarn 166
+      plot(x, y, 0, chip_area->bit_plane0);
+      #pragma popwarn
+    }
+  }
+  // Horizontal lines
+  for (int x = 0; x < SCREEN_WIDTH; x+=3) {
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+      // VBCC warning 166: cast to narrow type may cause loss of precision
+      #pragma dontwarn 166
+      plot(x, y, 0, chip_area->bit_plane0);
+      #pragma popwarn
+    }
+  }
+}
+
+void test_plot_diagonal_pattern(void) {
+  for (int x_start = 0; x_start < SCREEN_WIDTH; x_start += 3) {
+
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+      int x = x_start + y;
+      if (x < SCREEN_WIDTH) {
+        // VBCC warning 166: cast to narrow type may cause loss of precision
+        #pragma dontwarn 166
+        plot(x, y, 0, chip_area->bit_plane0);
+        #pragma popwarn
+      }
+    }
+
   }
 }
 
