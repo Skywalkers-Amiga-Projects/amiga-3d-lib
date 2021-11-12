@@ -75,7 +75,7 @@ void plot(UINT16 x, UINT16 y, UINT16 z, UBYTE *bitplane) {
   UINT32 index = y * (320 / 8) + (x / 8);
   // VBCC warning 166: cast to narrow type may cause loss of precision
   #pragma dontwarn 166
-  UINT8  bit = 1 << (x & 7);
+  UINT8  bit = 1 << (7 - (x & 7));
   #pragma popwarn
   bitplane[index] |= bit;
 }
